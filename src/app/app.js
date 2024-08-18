@@ -1,7 +1,7 @@
 import html from "./app.html";
 import './app.css'
-import AgentTable from "./components/agentTable/agentTable";
-import ModalBox from "./components/modal/modal";
+import AgentTable from "./contragents/table/agentTable";
+import ModalBox from "./contragents/modal/modal";
 
 const rootElement = document.getElementById('root');
 rootElement.innerHTML = html;
