@@ -5,16 +5,44 @@ import ModalBox from "./components/modal/modal";
 
 const rootElement = document.getElementById('root');
 rootElement.innerHTML = html;
+
+const agentMap = new Map();
+let agentCount = 0;
+
 const modal = new ModalBox();
-const agentTable = new AgentTable("main", (id) => {
-    modal.open(agentTable.getAgentById(id))
+modal.setSaveHandler(() => {
+    const agent = modal.getData();
+    if (agent.id != null) {
+        agentMap.set(agent.id, agent);
+    } else {
+        agentCount++;
+        agentMap.set(agentCount, {
+            id: agentCount,
+            name: agent.name,
+            inn: agent.inn,
+            address: agent.address,
+            kpp: agent.kpp
+        });
+    }
+    agentTable.refresh(agentMap);
 });
+
 rootElement.appendChild(modal.getNode());
 
-document.getElementById("add-button").addEventListener("click", (e) => {
+const rowClickHandler = id => {
+    modal.open(agentMap.get(id))
+};
+const deleteClickHandler = id => {
+    agentMap.delete(id);
+    agentTable.refresh(agentMap);
+};
+const agentTable = new AgentTable("main", rowClickHandler, deleteClickHandler);
+
+
+document.getElementById("add-button").addEventListener("click", e => {
         e.preventDefault();
         modal.open();
     }
 );
-modal.setSaveHandler(() => agentTable.saveAgent(modal.getData()));
-agentTable.refreshAgentTable();
+
+agentTable.refresh(agentMap);
