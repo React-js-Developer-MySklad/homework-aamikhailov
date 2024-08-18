@@ -6,7 +6,9 @@ import ModalBox from "./components/modal/modal";
 const rootElement = document.getElementById('root');
 rootElement.innerHTML = html;
 const modal = new ModalBox();
-const agentTable = new AgentTable("main");
+const agentTable = new AgentTable("main", (id) => {
+    modal.open(agentTable.getAgentById(id))
+});
 rootElement.appendChild(modal.getNode());
 
 document.getElementById("add-button").addEventListener("click", (e) => {
@@ -14,5 +16,5 @@ document.getElementById("add-button").addEventListener("click", (e) => {
         modal.open();
     }
 );
-modal.setAcceptHandler(() => agentTable.addAgent(modal.getData()));
+modal.setSaveHandler(() => agentTable.saveAgent(modal.getData()));
 agentTable.refreshAgentTable();
