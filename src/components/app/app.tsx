@@ -28,25 +28,25 @@ export const App: React.FC = () => {
     });
     const [modalState, setModalState] = React.useState({
         isOpen: false,
-        agentData: emptyAgent(),
-        onClose:
-            useCallback(() => {
-                setModalState({...modalState, isOpen: false})
-            }, []),
-        onSave:
-            useCallback((agent: Agent) => {
-                setAgentsStoreState(prevState => {
-                    if (agent.id === null) {
-                        agent.id = prevState.lastNumber + 1;
-                    }
-                    const newAgents = new Map(prevState.agents);
-                    newAgents.set(agent.id, agent);
-
-                    return {agents: newAgents, lastNumber: agent.id};
-                });
-                setModalState({...modalState, isOpen: false})
-            }, [])
+        agentData: emptyAgent()
     });
+
+    const closeModal = () => {
+        setModalState({...modalState, isOpen: false});
+    }
+    const saveAgent = (agent: Agent) => {
+        setAgentsStoreState(prevState => {
+            if (agent.id === null) {
+                agent.id = prevState.lastNumber + 1;
+            }
+            const newAgents = new Map(prevState.agents);
+            newAgents.set(agent.id, agent);
+
+            return {agents: newAgents, lastNumber: agent.id};
+        });
+        setModalState({...modalState, isOpen: false})
+    }
+
 
     const addAgentClick = () => {
         setModalState(prevState => {
@@ -87,8 +87,8 @@ export const App: React.FC = () => {
                 </span>
             </footer>
             {modalState.isOpen && <Modal agentData={modalState.agentData}
-                                         onClose={modalState.onClose}
-                                         onSave={modalState.onSave}/>
+                                         onClose={closeModal}
+                                         onSave={saveAgent}/>
             }
         </div>
     )
