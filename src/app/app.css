@@ -26,15 +26,9 @@ footer {
 
 .page-section {
     width: 100%;
-    max-width: 1017px;
+    max-width: 900px;
 }
 
 .main-table td, .main-table th {
     padding: 16px;
-    width: 25%;
-}
-
-.main-table tbody td:nth-child(4) span {
-    display: inline-block;
-    line-height: 1.125rem;
 }
