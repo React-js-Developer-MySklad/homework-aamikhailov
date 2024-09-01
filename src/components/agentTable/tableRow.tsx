@@ -3,8 +3,8 @@ import {Agent} from "../app/app";
 
 type Props = {
     agent: Agent;
-    onRowClick: (id: number) => void;
-    onDelete: (id: number) => void;
+    onRowClick: (id: string) => void;
+    onDelete: (id: string) => void;
 }
 
 export const TableRow: React.FC<Props> = (props) => {
