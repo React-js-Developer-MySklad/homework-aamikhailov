@@ -16,20 +16,17 @@ type AgentsStore = {
     agents: Map<number, Agent>,
     lastNumber: number
 }
+const emptyAgent = (): Agent => {
+    return {id: null, name: "", inn: "", address: "", kpp: ""}
+};
+
+let initialAgentsStore: AgentsStore = {agents: new Map<number, Agent>(), lastNumber: 0};
+let initialModalState = {isOpen: false, agentData: emptyAgent()}
 
 export const App: React.FC = () => {
-    const emptyAgent = (): Agent => {
-        return {id: null, name: "", inn: "", address: "", kpp: ""}
-    };
 
-    const [agentsStoreState, setAgentsStoreState] = React.useState<AgentsStore>({
-        agents: new Map<number, Agent>(),
-        lastNumber: 0
-    });
-    const [modalState, setModalState] = React.useState({
-        isOpen: false,
-        agentData: emptyAgent()
-    });
+    const [agentsStoreState, setAgentsStoreState] = React.useState<AgentsStore>(initialAgentsStore);
+    const [modalState, setModalState] = React.useState(initialModalState);
 
     const closeModal = () => {
         setModalState({...modalState, isOpen: false});
