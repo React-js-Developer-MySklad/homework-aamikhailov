@@ -1,7 +1,9 @@
+import "./modal.css"
 import React, {useEffect} from "react";
 import {Agent} from "../app/app";
 import {useAgents} from "../../hooks/agents.hook";
-import {Form, Field, FormSpy} from 'react-final-form'
+import {Form, Field} from 'react-final-form'
+import {ValidationErrors} from "final-form";
 
 type ModalProps = {
     agentId: string,
@@ -15,7 +17,7 @@ export const Modal: React.FC<ModalProps> = (modalProps) => {
     const [state, setState] = React.useState<Agent>(emptyAgent);
     const {saveAgent} = useAgents()
     const onSubmit = (values: Agent) => {
-        saveAgent({ ...values, id: modalProps.agentId});
+        saveAgent({...values, id: modalProps.agentId});
         modalProps.onClose();
     }
     useEffect(() => {
@@ -23,6 +25,25 @@ export const Modal: React.FC<ModalProps> = (modalProps) => {
             getAgentById(modalProps.agentId).then(agent => setState(agent));
         }
     }, [])
+
+    const validate = (agent: Agent): ValidationErrors => {
+        let errors = {};
+        if (agent.name === '') {
+            errors = {...errors, name: "Поле не может быть пустым"}
+        }
+        if (agent.address === '') {
+            errors = {...errors, address: "Поле не может быть пустым"}
+        }
+        if (agent.kpp === '') {
+            errors = {...errors, kpp: "Поле не может быть пустым"}
+        } else {
+            errors = {...errors, kpp: /[^0-9]/.test(agent.kpp) ? 'Поле должно содержать только цифры': undefined}
+        }
+        if (agent.inn === '') {
+            errors = {...errors, inn: "Поле не может быть пустым"}
+        }
+        return errors
+    }
 
     return (
         <div>
@@ -49,59 +70,67 @@ export const Modal: React.FC<ModalProps> = (modalProps) => {
                                 <span className="sr-only">Close modal</span>
                             </button>
                         </div>
-                        <Form onSubmit={onSubmit}>
+                        <Form onSubmit={onSubmit} validate={validate}>
                             {(formProps) => (
                                 <form className="p-4 md:p-5" onSubmit={formProps.handleSubmit}>
                                     <div className="grid gap-4 mb-4 grid-cols-2">
                                         <Field name="name" initialValue={state.name}>
-                                            {(props) => (
+                                            {({input, meta}) => (
                                                 <div className="col-span-2">
                                                     <label htmlFor="name"
                                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Наименование</label>
                                                     <input type="text" name="name" id="name"
                                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                            placeholder="Наименование"
-                                                           {...props.input}
+                                                           {...input}
                                                     />
+                                                    {meta.error && meta.touched &&
+                                                        <span className="error">{meta.error}</span>}
                                                 </div>
                                             )}
                                         </Field>
                                         <Field name="inn" initialValue={state.inn}>
-                                            {(props) => (
+                                            {({input, meta}) => (
                                                 <div className="col-span-2">
                                                     <label htmlFor="inn"
                                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
                                                     <input type="text" name="inn" id="inn"
                                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                            placeholder="ИНН"
-                                                           {...props.input}
+                                                           {...input}
                                                     />
+                                                    {meta.error && meta.touched &&
+                                                        <span className="error">{meta.error}</span>}
                                                 </div>
                                             )}
                                         </Field>
                                         <Field name="address" initialValue={state.address}>
-                                            {(props) => (
+                                            {({input, meta}) => (
                                                 <div className="col-span-2">
                                                     <label htmlFor="address"
                                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес</label>
                                                     <input type="text" name="address" id="address"
                                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                            placeholder="Адрес"
-                                                           {...props.input}
+                                                           {...input}
                                                     />
+                                                    {meta.error && meta.touched &&
+                                                        <span className="error">{meta.error}</span>}
                                                 </div>
                                             )}
                                         </Field>
                                         <Field name="kpp" initialValue={state.kpp}>
-                                            {(props) => (
+                                            {({input, meta}) => (
                                                 <div className="col-span-2">
                                                     <label htmlFor="kpp"
                                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">КПП</label>
                                                     <input type="text" name="kpp" id="kpp"
                                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                            placeholder="КПП"
-                                                           {...props.input}
+                                                           {...input}
                                                     />
+                                                    {meta.error && meta.touched &&
+                                                        <span className="error">{meta.error}</span>}
                                                 </div>
                                             )}
                                         </Field>
