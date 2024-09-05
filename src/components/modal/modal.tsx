@@ -1,30 +1,29 @@
 import React, {useEffect} from "react";
 import {Agent} from "../app/app";
 import {useAgents} from "../../hooks/agents.hook";
+import {Form, Field, FormSpy} from 'react-final-form'
 
 type ModalProps = {
     agentId: string,
     onClose: () => void;
 }
+
 let emptyAgent: Agent = {id: null, name: "", inn: "", kpp: "", address: ""}
 
-export const Modal: React.FC<ModalProps> = (props) => {
+export const Modal: React.FC<ModalProps> = (modalProps) => {
     const {getAgentById} = useAgents();
     const [state, setState] = React.useState<Agent>(emptyAgent);
     const {saveAgent} = useAgents()
-    const onSubmit = () => {
-        saveAgent(state);
-        props.onClose();
+    const onSubmit = (values: Agent) => {
+        saveAgent({ ...values, id: modalProps.agentId});
+        modalProps.onClose();
     }
     useEffect(() => {
-        if (props.agentId !== null) {
-            getAgentById(props.agentId).then(agent => setState(agent));
+        if (modalProps.agentId !== null) {
+            getAgentById(modalProps.agentId).then(agent => setState(agent));
         }
     }, [])
 
-    const onChange = (e: React.FormEvent<HTMLInputElement>) => {
-        setState({...state, [e.currentTarget.id]: e.currentTarget.value})
-    }
     return (
         <div>
             <div id="agent-modal" tabIndex={-1}
@@ -40,7 +39,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
                             <button type="button"
                                     className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                     data-modal-toggle="agent-modal"
-                                    onClick={() => props.onClose()}>
+                                    onClick={() => modalProps.onClose()}>
                                 <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                      fill="none"
                                      viewBox="0 0 14 14">
@@ -50,57 +49,76 @@ export const Modal: React.FC<ModalProps> = (props) => {
                                 <span className="sr-only">Close modal</span>
                             </button>
                         </div>
-                        <form className="p-4 md:p-5">
-                            <div className="grid gap-4 mb-4 grid-cols-2">
-                                <div className="col-span-2">
-                                    <label htmlFor="name"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Наименование</label>
-                                    <input type="text" name="name" id="name"
-                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                           placeholder="Наименование" required={false}
-                                           value={state.name}
-                                           onChange={onChange}/>
-                                </div>
-                                <div className="col-span-2">
-                                    <label htmlFor="inn"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
-                                    <input type="text" name="inn" id="inn"
-                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                           placeholder="ИНН" required={false}
-                                           value={state.inn}
-                                           onChange={onChange}/>
-                                </div>
-                                <div className="col-span-2">
-                                    <label htmlFor="address"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес</label>
-                                    <input type="text" name="address" id="address"
-                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                           placeholder="Адрес" required={false}
-                                           value={state.address}
-                                           onChange={onChange}/>
-                                </div>
-                                <div className="col-span-2">
-                                    <label htmlFor="kpp"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">КПП</label>
-                                    <input type="text" name="kpp" id="kpp"
-                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                           placeholder="КПП" required={false}
-                                           value={state.kpp}
-                                           onChange={onChange}/>
-                                </div>
-                                <button type="button" id="save-button" data-modal-hide="agent-modal"
-                                        className="text-white flex justify-center items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                        onClick={onSubmit}
-                                >
-                                    Сохранить
-                                </button>
-                                <button type="button" data-modal-hide="agent-modal"
-                                        className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
-                                        onClick={props.onClose}>
-                                    Отменить
-                                </button>
-                            </div>
-                        </form>
+                        <Form onSubmit={onSubmit}>
+                            {(formProps) => (
+                                <form className="p-4 md:p-5" onSubmit={formProps.handleSubmit}>
+                                    <div className="grid gap-4 mb-4 grid-cols-2">
+                                        <Field name="name" initialValue={state.name}>
+                                            {(props) => (
+                                                <div className="col-span-2">
+                                                    <label htmlFor="name"
+                                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Наименование</label>
+                                                    <input type="text" name="name" id="name"
+                                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                           placeholder="Наименование"
+                                                           {...props.input}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field>
+                                        <Field name="inn" initialValue={state.inn}>
+                                            {(props) => (
+                                                <div className="col-span-2">
+                                                    <label htmlFor="inn"
+                                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
+                                                    <input type="text" name="inn" id="inn"
+                                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                           placeholder="ИНН"
+                                                           {...props.input}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field>
+                                        <Field name="address" initialValue={state.address}>
+                                            {(props) => (
+                                                <div className="col-span-2">
+                                                    <label htmlFor="address"
+                                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес</label>
+                                                    <input type="text" name="address" id="address"
+                                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                           placeholder="Адрес"
+                                                           {...props.input}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field>
+                                        <Field name="kpp" initialValue={state.kpp}>
+                                            {(props) => (
+                                                <div className="col-span-2">
+                                                    <label htmlFor="kpp"
+                                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">КПП</label>
+                                                    <input type="text" name="kpp" id="kpp"
+                                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                           placeholder="КПП"
+                                                           {...props.input}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field>
+                                        <button type="submit" id="save-button" data-modal-hide="agent-modal"
+                                                className="text-white flex justify-center items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                        >
+                                            Сохранить
+                                        </button>
+                                        <button type="button" data-modal-hide="agent-modal"
+                                                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
+                                                onClick={modalProps.onClose}>
+                                            Отменить
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </Form>
                     </div>
                 </div>
             </div>
