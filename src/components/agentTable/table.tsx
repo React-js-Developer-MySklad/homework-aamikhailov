@@ -1,14 +1,13 @@
 import React from "react";
 import {TableRow} from "./tableRow";
-import {Agent} from "../app/app";
+import {useAgents} from "../../hooks/agents.hook";
 
 type AgentTableProps = {
-    agents: Agent[];
-    onDelete: (id: number) => void;
-    onEdit: (id: number) => void;
+    onEdit: (id: String) => void;
 }
 
-export const AgentTable: React.FC<AgentTableProps> = (agentsTableProps) => {
+export const AgentTable: React.FC<AgentTableProps> = (props) => {
+    const {agents, deleteAgent} = useAgents();
 
     return (<div className="relative overflow-x-auto">
             <table className="main-table w-full text-sm text-left">
@@ -32,13 +31,14 @@ export const AgentTable: React.FC<AgentTableProps> = (agentsTableProps) => {
                 </thead>
                 <tbody>
                 {
-                    agentsTableProps.agents.map(agent =>
+                    agents.map(agent =>
                         <TableRow
                             key={agent.id}
-                            onRowClick={agentsTableProps.onEdit}
-                            onDelete={agentsTableProps.onDelete}
                             agent={agent}
-                        />)
+                            onRowClick={props.onEdit}
+                            onDelete={deleteAgent}
+                        />
+                    )
                 }
                 </tbody>
             </table>

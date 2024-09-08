@@ -1,22 +1,30 @@
-import React, {ChangeEventHandler, FormEventHandler, useEffect} from "react";
+import React, {useEffect} from "react";
 import {Agent} from "../app/app";
+import {useAgents} from "../../hooks/agents.hook";
 
 type ModalProps = {
-    agentData: Agent,
+    agentId: string,
     onClose: () => void;
-    onSave: (agent: Agent) => void;
 }
+let emptyAgent: Agent = {id: null, name: "", inn: "", kpp: "", address: ""}
 
 export const Modal: React.FC<ModalProps> = (props) => {
-    const [state, setState] = React.useState<Agent>(props.agentData);
-
+    const {getAgentById} = useAgents();
+    const [state, setState] = React.useState<Agent>(emptyAgent);
+    const {saveAgent} = useAgents()
     const onSubmit = () => {
-        props.onSave(state);
+        saveAgent(state);
+        props.onClose();
     }
+    useEffect(() => {
+        if (props.agentId !== null) {
+            getAgentById(props.agentId).then(agent => setState(agent));
+        }
+    }, [])
+
     const onChange = (e: React.FormEvent<HTMLInputElement>) => {
         setState({...state, [e.currentTarget.id]: e.currentTarget.value})
     }
-
     return (
         <div>
             <div id="agent-modal" tabIndex={-1}
